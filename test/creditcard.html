@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="test.css">
+  <title>Creditcard.js for Underscore unit tests</title>
+  <script src="evidence.js"></script>
+  <script src="evidence_runner.js"></script>
+  <script src="underscore.js"></script>
+  <script src="../creditcard.js"></script>
+</head>
+<body>
+  <h1>Creditcard.js for Underscore unit tests</h1>
+  <p id="results">
+    Running… see browser console for results
+  </p>
+
+  <script>
+  (function(){
+
+    Evidence('CreditCardTest', {
+
+      testDetectsType: function(t) {
+        t.assertEqual('Visa', CreditCard.type('4111111111111111'))
+        t.assertEqual('MasterCard', CreditCard.type('5555555555554444'))
+        t.assertEqual('DinersClub', CreditCard.type('30569309025904'))
+        t.assertEqual('Amex', CreditCard.type('371449635398431'))
+        t.assertEqual('Discover', CreditCard.type('6011000990139424'))
+      },
+      
+      testDetectsVerifiesTypeByCard: function(t) {
+        t.assert(CreditCard.isVisa('4111111111111111'))
+        t.assert(!CreditCard.isVisa('5555555555554444'))
+        t.assert(!CreditCard.isVisa('30569309025904'))
+        t.assert(!CreditCard.isVisa('371449635398431'))
+        t.assert(!CreditCard.isVisa('6011000990139424'))
+        
+        t.assert(CreditCard.isMasterCard('5555555555554444'))
+        t.assert(CreditCard.isDinersClub('30569309025904'))
+        t.assert(CreditCard.isAmex('371449635398431'))
+        t.assert(CreditCard.isDiscover('6011000990139424'))
+      },
+      
+      testLuhn10Verification: function(t) {
+        t.assert(CreditCard.verifyLuhn10('49927398716'))
+        t.assert(CreditCard.verifyLuhn10('049927398716'))
+        t.assert(CreditCard.verifyLuhn10('0049927398716'))
+        t.assert(!CreditCard.verifyLuhn10('49927398715'))
+        t.assert(!CreditCard.verifyLuhn10('49927398717'))
+      },
+      
+      testDetectsTestNumbers: function(t) {
+        var TEST_NUMBERS = ('378282246310005 371449635398431 378734493671000 '+
+          '30569309025904 38520000023237 6011111111111117 '+
+          '6011000990139424 5555555555554444 5105105105105100 '+
+          '4111111111111111 4012888888881881 4222222222222').split(' ')
+      
+        TEST_NUMBERS.forEach(function(number){
+          t.assert(CreditCard.isTestNumber(number))
+        })
+      
+        t.assert(!CreditCard.isTestNumber('1'))
+      },
+      
+      testIgnoresWhiteSpace: function(t) {
+        t.assertEqual('4111111111111111', CreditCard.strip('4111 1111 1111 1111 '))
+
+        t.assertEqual('Visa', CreditCard.type('4111 1111 1111 1111 '))
+        t.assertEqual('Visa', CreditCard.type(' 4111 1111 1111 1111 '))
+        t.assertEqual('Visa', CreditCard.type('\n4111 1111\t 1111 1111 '))
+        t.assert(CreditCard.verifyLuhn10('  004 992739 87 16'))
+        t.assert(CreditCard.isTestNumber('601 11111111111 17'))
+      }
+      
+    })
+
+  })()
+  </script>
+</body>
+</html>
