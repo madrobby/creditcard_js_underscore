@@ -74,8 +74,7 @@ var CreditCard = {
 }
 
 ;(function(){
-  for(var card in CreditCard.CARDS)
-    CreditCard['is'+card] = _.bind(function(card, number){
-      return CreditCard.CARDS[card].test(CreditCard.strip(number))
-    }, CreditCard, card)
+  _.each(CreditCard.CARDS, function(exp, card) {
+    CreditCard['is'+card] = _.compose(_.bind(exp.test, exp), CreditCard.strip)
+  })
 })()
